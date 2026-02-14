@@ -1,7 +1,9 @@
 fastapi
 uvicorn
+jinja2
+python-multipart
 sqlalchemy
 psycopg2-binary
 pgvector
 openai
-python-multipart
+python-dotenv
