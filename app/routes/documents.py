@@ -2,8 +2,7 @@ from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models import Document, DocumentChunk
-from app.services.embeddings import get_embedding
-from app.schemas import DocumentResponse
+from app.services.embeddings import get_embedding, fit_vectorizer
 from typing import List
 
 from app.schemas import DocumentResponse
@@ -40,6 +39,7 @@ async def upload_document(file: UploadFile = File(...), db: Session = Depends(ge
     db.refresh(document)
 
     chunks = chunk_text(content)
+    fit_vectorizer(chunks)
 
     for idx, chunk in enumerate(chunks):
         embedding = get_embedding(chunk)

@@ -1,12 +1,16 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Global vectorizer
 vectorizer = TfidfVectorizer()
+is_fitted = False
 
-# You must fit once on your corpus
 def fit_vectorizer(documents):
+    global is_fitted
     vectorizer.fit(documents)
+    is_fitted = True
 
 def get_embedding(text: str):
+    if not is_fitted:
+        raise ValueError("Vectorizer not fitted yet.")
+
     vector = vectorizer.transform([text])
     return vector.toarray()[0].tolist()
