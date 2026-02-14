@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Upload Document</h2>
+<form action="/documents/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" required>
+    <button type="submit">Upload</button>
+</form>
+
+<h2>Ask Question</h2>
+<form action="/qa/ask-web" method="post">
+    <textarea name="question" rows="4" placeholder="Ask something..." required></textarea>
+    <br>
+    <button type="submit">Ask</button>
+</form>
+
+{% if answer %}
+    <h3>Answer</h3>
+    <p>{{ answer }}</p>
+
+    <h4>Sources</h4>
+    {% for source in sources %}
+        <div class="source-box">
+            <p>{{ source.chunk }}</p>
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}
