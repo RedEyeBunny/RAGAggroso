@@ -1,14 +1,12 @@
+import os
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from openai import OpenAI
 from sqlalchemy import text
+from sqlalchemy.orm import Session
+
 from app.database import SessionLocal
-from app.main import templates
-from app.models import DocumentChunk
 from app.schemas import AnswerResponse, QuestionRequest
 from app.services.embeddings import get_embedding
-import app.templates
-from openai import OpenAI
-import os
 
 router = APIRouter()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -23,32 +21,34 @@ def get_db():
 @router.post("/ask", response_model=AnswerResponse)
 def ask_question(payload: QuestionRequest, db: Session = Depends(get_db)):
     question = payload.question
+
     if not question.strip():
-        return templates.TemplateResponse("index.html", {
-            "request": request,
-            "error": "Question cannot be empty."
-        })
+        return {
+            "answer": "Question cannot be empty.",
+            "sources": []
+        }
+
     query_embedding = get_embedding(question)
 
     results = db.execute(text("""
         SELECT id, content, document_id
         FROM document_chunks
-        ORDER BY embedding <-> :embedding
+        ORDER BY embedding <-> CAST(:embedding AS vector)
         LIMIT 3
     """), {"embedding": query_embedding}).fetchall()
 
     context = "\n\n".join([r[1] for r in results])
 
     prompt = f"""
-    Answer using only the context below.
-    If not found, say "Not found in documents."
+Answer using only the context below.
+If not found, say "Not found in documents."
 
-    Context:
-    {context}
+Context:
+{context}
 
-    Question:
-    {question}
-    """
+Question:
+{question}
+"""
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
