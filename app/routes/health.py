@@ -7,7 +7,7 @@ import os
 
 router = APIRouter()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=os.getenv("GROQ_API_KEY"))
 
 @router.get("/health")
 def health_check():
