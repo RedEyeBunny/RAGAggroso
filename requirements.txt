@@ -7,5 +7,4 @@ psycopg2-binary
 pgvector
 openai
 python-dotenv
-fastembed
-numpy
+scikit-learn
