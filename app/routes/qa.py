@@ -9,7 +9,7 @@ from app.schemas import AnswerResponse, QuestionRequest
 from app.services.embeddings import get_embedding
 
 router = APIRouter()
-client = OpenAI(api_key=os.getenv("GROQ_API_KEY"))
+client = OpenAI(api_key=os.getenv("GROQ_API_KEY"), base_url="https://api.groq.com/openai/v1")
 
 def get_db():
     db = SessionLocal()
