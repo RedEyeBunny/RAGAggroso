@@ -1,10 +1,12 @@
-import os
-from fastembed import TextEmbedding
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
+# Global vectorizer
+vectorizer = TfidfVectorizer()
+
+# You must fit once on your corpus
+def fit_vectorizer(documents):
+    vectorizer.fit(documents)
 
 def get_embedding(text: str):
-    if not text.strip():
-        return []
-    embedding = list(model.embed([text]))[0]
-    return embedding.tolist()
+    vector = vectorizer.transform([text])
+    return vector.toarray()[0].tolist()
